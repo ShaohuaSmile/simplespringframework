@@ -8,7 +8,7 @@ import java.lang.annotation.*;
  * @author Liush
  * @date 2017/11/13 17:51
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Service {

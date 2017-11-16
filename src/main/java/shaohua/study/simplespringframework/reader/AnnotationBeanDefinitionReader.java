@@ -5,10 +5,12 @@ import shaohua.study.simplespringframework.annotation.Autowired;
 import shaohua.study.simplespringframework.annotation.Controller;
 import shaohua.study.simplespringframework.annotation.Service;
 import shaohua.study.simplespringframework.beans.*;
+import shaohua.study.simplespringframework.util.ClassUtil;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
@@ -90,33 +92,42 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         }
 
     }
+
     private void registerBeanDefinition(String className) throws ClassNotFoundException {
         Class clazz = Class.forName(className);
-        if(clazz.isAnnotationPresent(Service.class)){
-            AnnotationBeanDefinition beanDefinition = new AnnotationBeanDefinition();
-            Service service = (Service) clazz.getAnnotation(Service.class);
-            String name = service.value();
-            if("".equals(name)){
-                String simpleName = clazz.getSimpleName();
-                name = simpleName.substring(0,1).toLowerCase() + simpleName.substring(1);
-            }
-            beanDefinition.setName(name);
-            beanDefinition.setClassName(className);
-            beanDefinition.setBeanClass(clazz);
-            Field[] fields = clazz.getDeclaredFields();
-            if(fields == null){
-                return;
-            }
-            for(Field field:fields){
-                if(field.isAnnotationPresent(Autowired.class)){
-                    PropertyValue pv = new PropertyValue();
-                    pv.setName(field.getName());
-                    pv.setValue(new BeanReference(field.getName()));
-                    beanDefinition.getPropertyValues().addProperty(pv);
-                }
-
-            }
-            registry.put(name,beanDefinition);
+        if(!ClassUtil.isAnnotated(clazz,Service.class)){
+            return;
         }
+
+        AnnotationBeanDefinition beanDefinition = new AnnotationBeanDefinition();
+        String simpleName = clazz.getSimpleName();
+        String name = simpleName.substring(0,1).toLowerCase() + simpleName.substring(1);
+        if(clazz.isAnnotationPresent(Service.class)){
+            Service service = (Service) clazz.getAnnotation(Service.class);
+            String defindName = service.value();
+            if(!"".equals(defindName)){
+                name = defindName;
+            }
+        }
+
+        beanDefinition.setName(name);
+        beanDefinition.setClassName(className);
+        beanDefinition.setBeanClass(clazz);
+        Field[] fields = clazz.getDeclaredFields();
+        if(fields == null){
+            return;
+        }
+        for(Field field:fields){
+            if(field.isAnnotationPresent(Autowired.class)){
+                PropertyValue pv = new PropertyValue();
+                pv.setName(field.getName());
+                pv.setValue(new BeanReference(field.getName()));
+                beanDefinition.getPropertyValues().addProperty(pv);
+            }
+
+        }
+        registry.put(name,beanDefinition);
+
     }
+
 }
