@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class AnnotationApplicationContext extends AbstractApplicationContext {
 
-    private final String[] scanPackages;
+    protected final String[] scanPackages;
 
     public AnnotationApplicationContext(String... scanPackages) throws IOException, ClassNotFoundException {
         this.scanPackages = scanPackages;

@@ -48,8 +48,10 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
                 URL url = urls.nextElement();
                 String type = url.getProtocol();
                 if("file".equals(type)){
+                    //   ...class/packagePath or ...class/packagePath/
                     String path = url.getPath();
-                    String basePath = path.substring(0,(path.length()-packagePath.length()));
+                    //String basePath = path.substring(0,(path.length()-packagePath.length()));
+                    String basePath = path.substring(0,path.indexOf(packagePath));
                     loadBeanDefinition(basePath,packageName);
                 }else if("jar".equals(type)){
                     //todo ....
